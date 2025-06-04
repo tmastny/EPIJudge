@@ -3,67 +3,53 @@ from test_framework import generic_test
 # Definition: the parity of a binary word is 1 if the number
 #   of 1s in the odd; otherwise 0
 
-# O(n) for n-bit word
-def parity_brute_force(x: int) -> int:
-    
-    num_ones = 0
+# O(n) where n is number of bits
+# O(log2 m) where m is number of digits
+def parity_n(x: int) -> int:
+    ones = 0
     while x:
-        num_ones += x & 1 
-        x = x >> 1
-    
-    return num_ones % 2
-
-# O(n) for n-bit word
-def parity_brute_force_xor(x: int) -> int:
-    
-    odd_ones = 0
-    while x:
-        odd_ones ^= x & 1 
+        ones += x & 1
         x >>= 1
-    
-    return odd_ones
 
-# faster O(n) solution.
-#   x & (x - 1) sets the lowest 1 bit to 0.
-#   So there are only `k` operations instead of `n`,
-#   where `k is the number of 1 bits.
-def parity_brute_force_faster(x: int) -> int:
-    
-    odd_ones = 0
+    return ones % 2
+
+def parity_mod2(x: int) -> int:
+    ones = 0
     while x:
-        # we alternate between odd ones and even ones 
-        # until we run out of ones
-        odd_ones ^= 1
+        ones ^= 1 # count mod 2
         x &= x - 1
-    
-    return odd_ones
 
-# use lookup table for 4-bit parities (0-15)
-# and shift by 4-bits.
-def parity_lookup(x: int) -> int:
-    
-    parity_lookup = [0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0]
-    
-    odd_ones = 0
-    while x:
-        odd_ones ^= parity_lookup[x & 15]
-        x >>= 4
-    
-    return odd_ones
-    
-    
-# O(log n) solution:
-#   the parity of b_3b_2b_1b_0 equals the parity of
-#   (b_3b_2) ^ (b_1b_0).
+    return ones
+
+PARITY_CACHE = [
+    parity_mod2(i) for i in range(2**16)
+]
+
+def parity_cache(x: int) -> int:
+    return (
+        PARITY_CACHE[x & 0xffff] ^
+        PARITY_CACHE[(x >> 16) & 0xffff] ^
+        PARITY_CACHE[(x >> 32) & 0xffff] ^
+        PARITY_CACHE[(x >> 48) & 0xffff]
+    )
+
 def parity(x: int) -> int:
+    mask = 2**32 - 1
+    bit32 = (x >> 32) ^ (x & mask)
     
-    bits = [32, 16, 8, 4, 2, 1]
+    mask >>= 16
+    bit16 = (bit32 >> 16) ^ (bit32 & mask)
     
-    for bit in bits:
-        x ^= x >> bit
-        
-    return x & 1
+    mask >>= 8
+    bit8 = (bit16 >> 8) ^ (bit16 & mask)
     
+    mask >>= 4
+    bit4 = (bit8 >> 4) ^ (bit8 & mask)
+    
+    mask >>= 2
+    bit2 = (bit4 >> 2) ^ (bit4 & mask)
+
+    return (bit2 >> 1) ^ (bit2 & 1)
 
 if __name__ == '__main__':
     exit(generic_test.generic_test_main('parity.py', 'parity.tsv', parity))
