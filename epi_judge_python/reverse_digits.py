@@ -2,11 +2,22 @@ from test_framework import generic_test
 
 
 def reverse(x: int) -> int:
-    # TODO - you fill in here.
-    return 0
+    positive = x >= 0
+    x = abs(x)
+
+    rev = 0
+    while x:
+        rev *= 10
+        rev += x % 10
+
+        x //= 10
+
+    return rev if positive else -rev
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(
-        generic_test.generic_test_main('reverse_digits.py',
-                                       'reverse_digits.tsv', reverse))
+        generic_test.generic_test_main(
+            "reverse_digits.py", "reverse_digits.tsv", reverse
+        )
+    )
