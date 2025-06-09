@@ -1,22 +1,28 @@
 from test_framework import generic_test
 from test_framework.test_failure import TestFailure
 
-
 class Stack:
+    def __init__(self):
+        self.stack = []
+        self.stackmax = []
+
     def empty(self) -> bool:
-        # TODO - you fill in here.
-        return True
+        return len(self.stack) == 0
 
     def max(self) -> int:
-        # TODO - you fill in here.
-        return 0
+        return self.stackmax[-1]
 
     def pop(self) -> int:
-        # TODO - you fill in here.
-        return 0
+        if self.stack[-1] == self.stackmax[-1]:
+            self.stackmax.pop()
+
+        return self.stack.pop()
 
     def push(self, x: int) -> None:
-        # TODO - you fill in here.
+        if not self.stackmax or x >= self.stackmax[-1]:
+            self.stackmax.append(x)
+
+        self.stack.append(x)
         return
 
 
