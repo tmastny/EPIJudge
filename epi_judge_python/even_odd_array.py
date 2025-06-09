@@ -6,10 +6,28 @@ from test_framework import generic_test
 from test_framework.test_failure import TestFailure
 from test_framework.test_utils import enable_executor_hook
 
+from math import ceil
+
+def even_odd_indices(A: List[int]) -> None:
+    offset = 0 if len(A) % 2 == 1 else 1
+
+    for j in range(1, ceil(len(A) / 2)):
+        for i in range(j, len(A) - (j - 1) - offset, 2):
+            A[i], A[i + 1] = A[i + 1], A[i]
+
+    return
+
 
 def even_odd(A: List[int]) -> None:
-    # TODO - you fill in here.
+    even = 0
+    for i in range(len(A)):
+        if A[i] % 2 == 0:
+            A[i], A[even] = A[even], A[i]
+            even += 1
+    
     return
+
+
 
 
 @enable_executor_hook
