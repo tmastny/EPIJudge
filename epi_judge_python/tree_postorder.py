@@ -5,8 +5,16 @@ from test_framework import generic_test
 
 
 def postorder_traversal(tree: BinaryTreeNode) -> List[int]:
-    # TODO - you fill in here.
-    return []
+    order = []
+    def dfs(node):
+        if not node:
+            return
+        dfs(node.left)
+        dfs(node.right)
+        order.append(node.data)
+    
+    dfs(tree) 
+    return order
 
 
 if __name__ == '__main__':
