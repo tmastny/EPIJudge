@@ -18,7 +18,7 @@ def even_odd_indices(A: List[int]) -> None:
     return
 
 
-def even_odd(A: List[int]) -> None:
+def even_odd_my_approach(A: List[int]) -> None:
     even = 0
     for i in range(len(A)):
         if A[i] % 2 == 0:
@@ -26,6 +26,22 @@ def even_odd(A: List[int]) -> None:
             even += 1
     
     return
+
+# inspired by dutch flag partitioning
+def even_odd(A: List[int]) -> None:
+    next_even, next_odd = 0, len(A) - 1
+    
+    # < works here, because once they are equal it doesn't matter
+    # if the current element is even or odd: it's partitioned
+    while next_even < next_odd:
+        if A[next_even] % 2 == 0:
+            next_even += 1
+        else:
+            A[next_even], A[next_odd] = A[next_odd], A[next_even]
+            next_odd -= 1
+    
+    return
+
 
 
 
