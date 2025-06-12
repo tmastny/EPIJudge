@@ -2,8 +2,13 @@ from test_framework import generic_test
 
 
 def gcd(x: int, y: int) -> int:
-    # TODO - you fill in here.
-    return 0
+    a = max(x, y)
+    b = min(x, y)
+
+    if b == 0:
+        return a
+
+    return gcd(a - a // b * b, b)
 
 
 if __name__ == '__main__':
