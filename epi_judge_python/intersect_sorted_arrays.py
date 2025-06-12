@@ -4,8 +4,19 @@ from test_framework import generic_test
 
 
 def intersect_two_sorted_arrays(A: List[int], B: List[int]) -> List[int]:
-    # TODO - you fill in here.
-    return []
+    merged = []
+    while A and B:
+        if A[-1] < B[-1]:
+            B.pop()
+        elif A[-1] > B[-1]:
+            A.pop()
+        else:
+            element, _ = A.pop(), B.pop()
+            if not merged or merged[-1] != element:
+                merged.append(element)
+        
+    merged.reverse()
+    return merged
 
 
 if __name__ == '__main__':
