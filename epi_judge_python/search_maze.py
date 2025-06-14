@@ -9,23 +9,49 @@ from test_framework.test_utils import enable_executor_hook
 
 WHITE, BLACK = range(2)
 
-Coordinate = collections.namedtuple('Coordinate', ('x', 'y'))
+Coordinate = collections.namedtuple("Coordinate", ("x", "y"))
 
 
-def search_maze(maze: List[List[int]], s: Coordinate,
-                e: Coordinate) -> List[Coordinate]:
-    # TODO - you fill in here.
-    return []
+def search_maze(
+    maze: List[List[int]], s: Coordinate, e: Coordinate
+) -> List[Coordinate] | None:
+    path = [s]
+    def dfs(x, y):
+        if (
+            x < 0 or x >= len(maze) or
+            y < 0 or y >= len(maze[0]) or
+            maze[x][y] == BLACK
+        ):
+            return False
+        elif x == e.x and y == e.y:
+            return True
+
+        maze[x][y] = BLACK
+        for nx, ny in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
+            path.append(Coordinate(nx, ny))
+            if dfs(nx, ny):
+                return True
+            path.pop()
+
+        return False
+
+    dfs(s.x, s.y)
+    return path if path[-1] == e else None
 
 
 def path_element_is_feasible(maze, prev, cur):
-    if not ((0 <= cur.x < len(maze)) and
-            (0 <= cur.y < len(maze[cur.x])) and maze[cur.x][cur.y] == WHITE):
+    if not (
+        (0 <= cur.x < len(maze))
+        and (0 <= cur.y < len(maze[cur.x]))
+        and maze[cur.x][cur.y] == WHITE
+    ):
         return False
-    return cur == (prev.x + 1, prev.y) or \
-           cur == (prev.x - 1, prev.y) or \
-           cur == (prev.x, prev.y + 1) or \
-           cur == (prev.x, prev.y - 1)
+    return (
+        cur == (prev.x + 1, prev.y)
+        or cur == (prev.x - 1, prev.y)
+        or cur == (prev.x, prev.y + 1)
+        or cur == (prev.x, prev.y - 1)
+    )
 
 
 @enable_executor_hook
@@ -40,16 +66,18 @@ def search_maze_wrapper(executor, maze, s, e):
         return s == e
 
     if path[0] != s or path[-1] != e:
-        raise TestFailure('Path doesn\'t lay between start and end points')
+        raise TestFailure("Path doesn't lay between start and end points")
 
     for i in range(1, len(path)):
         if not path_element_is_feasible(maze, path[i - 1], path[i]):
-            raise TestFailure('Path contains invalid segments')
+            raise TestFailure("Path contains invalid segments")
 
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(
-        generic_test.generic_test_main('search_maze.py', 'search_maze.tsv',
-                                       search_maze_wrapper))
+        generic_test.generic_test_main(
+            "search_maze.py", "search_maze.tsv", search_maze_wrapper
+        )
+    )
