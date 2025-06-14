@@ -1,9 +1,16 @@
 from test_framework import generic_test
 
+coins = [100, 50, 25, 10, 5, 1]
 
 def change_making(cents: int) -> int:
-    # TODO - you fill in here.
-    return 0
+    change = 0
+    for coin in coins:
+        n = cents // coin
+        cents -= n * coin
+
+        change += n
+
+    return change
 
 
 if __name__ == '__main__':
