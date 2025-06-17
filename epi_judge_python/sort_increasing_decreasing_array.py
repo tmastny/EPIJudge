@@ -1,7 +1,8 @@
-from typing import List
 
 from test_framework import generic_test
 
+from typing import List
+from operator import le, ge
 import heapq
 
 INC = 0
@@ -16,19 +17,27 @@ def sort_k_increasing_decreasing_array(A: List[int]) -> List[int]:
     i = 0
     while i + 1 < len(A) and A[i] == A[i + 1]:
         i += 1
-    if i + 1 < len(A) and A[i] < A[i + 1]:
-        heap.append((A[0], 0, INC))
 
-    i = len(A) - 1
-    while i - 1 >= 0 and A[i - 1] == A[i]:
-        i -= 1
-    if i - 1 >= 0 and A[i - 1] > A[i]:
-        heap.append((A[len(A) - 1], len(A) - 1, DEC))
+    if i + 1 == len(A):
+        return A
 
-    for i in range(1, len(A) - 2):
-        if A[i - 1] > A[i] < A[i + 1]:
-            heap.append((A[i - 1], i - 1, DEC))
-            heap.append((A[i], i, INC))
+    while i + 1 < len(A):
+        start = i
+        if A[i] < A[i + 1]:
+            op, direction = le, INC
+        else:
+            op, direction = ge, DEC
+
+        while i + 1 < len(A) and op(A[i], A[i + 1]):
+            i += 1
+
+        if direction == INC:
+            heap.append((A[start], start, INC))
+        else:
+            heap.append((A[i], i, DEC))
+
+
+    print(heap)
 
     B = []
     heapq.heapify(heap)
