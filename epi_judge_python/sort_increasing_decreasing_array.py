@@ -5,54 +5,77 @@ from typing import List
 from operator import le, ge
 import heapq
 
-INC = 0
-DEC = 1
+INC = True
+DEC = False
 
-def sort_k_increasing_decreasing_array(A: List[int]) -> List[int]:
+def sort_k_increasing_decreasing_array_old(A: List[int]) -> List[int]:
     if len(A) <= 3:
         return sorted(A)
 
     heap = []
 
+    dir = None
     i = 0
-    while i + 1 < len(A) and A[i] == A[i + 1]:
-        i += 1
-
-    if i + 1 == len(A):
-        return A
-
-    while i + 1 < len(A):
+    while i < len(A):
         start = i
-        if A[i] < A[i + 1]:
-            op, direction = le, INC
-        else:
-            op, direction = ge, DEC
+        while i + 1 < len(A) and A[i] == A[i + 1]:
+            i += 1
 
+        if dir is None:
+            dir = INC if i + 1 < len(A) and A[i] < A[i + 1] else DEC
+
+        op = le if dir == INC else ge
         while i + 1 < len(A) and op(A[i], A[i + 1]):
             i += 1
 
-        if direction == INC:
-            heap.append((A[start], start, INC))
+        if dir == INC:
+            heap.append((A[start], start, i, INC))
         else:
-            heap.append((A[i], i, DEC))
+            heap.append((A[i], start, i, DEC))
 
+        dir = not dir
+        i += 1
 
-    print(heap)
 
     B = []
     heapq.heapify(heap)
     while heap:
-        val, idx, direction = heapq.heappop(heap)
+        val, start, end, dir = heapq.heappop(heap)
         B.append(val)
-        if direction == INC and idx + 1 < len(A) and A[idx] <= A[idx + 1]:
-            heapq.heappush(heap, (A[idx + 1], idx + 1, INC))
-        elif (
-            direction == DEC and (
-                idx - 1 == 0 and A[idx - 1] >= A[idx] or
-                idx - 2 >= 0 and A[idx - 2] >= A[idx - 1]
-            )
+        if dir == INC and start < end:
+            heapq.heappush(heap, (A[start + 1], start + 1, end, INC))
+        elif dir == DEC and start < end:
+            heapq.heappush(heap, (A[end - 1], start, end - 1, DEC))
+
+    return B
+
+def sort_k_increasing_decreasing_array(A: List[int]) -> List[int]:
+    heap = []
+    dir = INC
+    start_idx = 0
+    for i in range(len(A)):
+        if (
+            i == len(A) - 1 or
+            A[i] > A[i + 1] and dir == INC or
+            A[i] <= A[i + 1] and dir == DEC
         ):
-            heapq.heappush(heap, (A[idx - 1], idx - 1, DEC))
+            if dir == INC:
+                heap.append((A[start_idx], start_idx, i, INC))
+            else:
+                heap.append((A[i], start_idx, i, DEC))
+
+            start_idx = i + 1
+            dir = not dir
+
+    B = []
+    heapq.heapify(heap)
+    while heap:
+        val, start, end, dir = heapq.heappop(heap)
+        B.append(val)
+        if dir == INC and start < end:
+            heapq.heappush(heap, (A[start + 1], start + 1, end, INC))
+        elif dir == DEC and start < end:
+            heapq.heappush(heap, (A[end - 1], start, end - 1, DEC))
 
     return B
 
