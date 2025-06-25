@@ -15,9 +15,29 @@ class Name:
                 self.last_name < other.last_name)
 
 
+def eliminate_duplicate_dict(A: List[Name]) -> None:
+    uniques = {}
+    for a in A:
+        if a.first_name not in uniques:
+            uniques[a.first_name] = a
+
+    for i, a in enumerate(uniques.values()):
+        A[i] = a
+
+    del A[len(uniques):]
+    
+    
 def eliminate_duplicate(A: List[Name]) -> None:
-    # TODO - you fill in here.
-    return
+    A.sort()
+    write = 1
+    for read in range(1, len(A)):
+        if A[read - 1].first_name != A[read].first_name:
+            A[write] = A[read]
+            write += 1
+
+    del A[write:]
+
+
 
 
 @enable_executor_hook
