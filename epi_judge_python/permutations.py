@@ -26,7 +26,7 @@ def permutations(A: List[int]) -> List[List[int]]:
     output = []
     def bt(idx):
         if idx == len(A):
-            output.append(tuple(A[:]))
+            output.append(A[:])
             return
 
         for i in range(idx, len(A)):
